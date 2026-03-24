@@ -30,7 +30,7 @@ const FlowDashboard = ({
     <div style={{ width: '100vw', height: '100vh', background: '#f4f7f9' }}>
       <div className="controls-overlay">
         <button className="btn-run" onClick={handleRun} disabled={loading}>
-          {loading ? 'Thinking...' : '▶ Run Flow'}
+          {loading ? 'Waking up AI...' : '▶ Run Flow'}
         </button>
         <button className="btn-save" onClick={handleSave}>
           💾 Save to DB
@@ -61,7 +61,6 @@ function App() {
   const [prompt, setPrompt] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Initial Nodes
   const [nodes, setNodes, onNodesChange] = useNodesState([
     { 
       id: 'node-1', 
@@ -84,25 +83,22 @@ function App() {
     [setEdges]
   );
 
-  // AI Logic with STABILITY FIX
+  // --- REBUILT AI LOGIC WITH RETRY (WAKE-UP) MECHANISM ---
   const handleRun = async () => {
     const isConnected = edges.some(
       (edge) => edge.source === 'node-1' && edge.target === 'node-2'
     );
 
-    if (!isConnected) {
-      return alert("🔌 Please connect the nodes with an edge first!");
-    }
-
+    if (!isConnected) return alert("🔌 Please connect the nodes with an edge first!");
     if (!prompt) return alert("Please type something first!");
     
     setLoading(true);
-    
-    // 1. First, update nodes to show the loading animation
     setNodes((nds) => nds.map((n) => n.id === 'node-2' ? { ...n, data: { ...n.data, response: '', loading: true } } : n));
 
-    // 2. Add a tiny 100ms delay to let the UI finish rendering before hitting the network
-    setTimeout(async () => {
+    const maxRetries = 3;
+    let attempt = 0;
+
+    const fetchWithRetry = async () => {
       try {
         const res = await API.post('/ask-ai', { prompt });
         const answer = res.data.answer;
@@ -110,20 +106,27 @@ function App() {
         setNodes((nds) => nds.map((n) => 
           n.id === 'node-2' ? { ...n, data: { ...n.data, response: answer, loading: false } } : n
         ));
-      } catch (err) {
-        console.error("AI Connection Error:", err);
-        alert("Failed to connect to local server. Make sure your backend is running on port 5000!");
-        
-        setNodes((nds) => nds.map((n) => 
-          n.id === 'node-2' ? { ...n, data: { ...n.data, loading: false } } : n
-        ));
-      } finally {
         setLoading(false);
+      } catch (err) {
+        if (attempt < maxRetries) {
+          attempt++;
+          console.log(`Connection attempt ${attempt} failed. Retrying...`);
+          // Wait 2 seconds before next attempt to let Render spin up
+          setTimeout(fetchWithRetry, 2000); 
+        } else {
+          console.error("AI Connection Error:", err);
+          alert("Server is still waking up or unreachable. Please wait 10 seconds and try again.");
+          setNodes((nds) => nds.map((n) => 
+            n.id === 'node-2' ? { ...n, data: { ...n.data, loading: false } } : n
+          ));
+          setLoading(false);
+        }
       }
-    }, 100); 
+    };
+
+    fetchWithRetry();
   };
 
-  // DB Logic
   const handleSave = async () => {
     const resultNode = nodes.find(n => n.id === 'node-2');
     if (!resultNode.data.response) return alert("Run the flow first to get a response!");
@@ -132,7 +135,7 @@ function App() {
       await API.post('/save', { prompt, response: resultNode.data.response });
       alert("✅ Saved to MongoDB successfully!");
     } catch (err) {
-      alert("Failed to save to database.");
+      alert("Failed to save to database. Check if backend is running.");
     }
   };
 

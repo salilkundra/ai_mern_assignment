@@ -18,5 +18,5 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api', aiRoutes);
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
