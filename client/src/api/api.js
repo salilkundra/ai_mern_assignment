@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://ai-mern-assignment.onrender.com/api', 
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api', 
   headers: {
     'Content-Type': 'application/json',
   },
