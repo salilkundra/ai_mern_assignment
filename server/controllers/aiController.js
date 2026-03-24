@@ -36,7 +36,7 @@ exports.saveChat = async (req, res) => {
 // Logic for fetching latest history
 exports.getHistory = async (req, res) => {
   try {
-    const history = await Prompt.find().sort({ createdAt: -1 }).limit(5);
+    const history = await Prompt.find().sort({ createdAt: -1 }).limit(6);
     res.json(history);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch history" });

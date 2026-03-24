@@ -1,0 +1,248 @@
+:root {
+  --text: #6b6375;
+  --text-h: #08060d;
+  --bg: #fff;
+  --border: #e5e4e7;
+  --code-bg: #f4f3ec;
+  --accent: #aa3bff;
+  --accent-bg: rgba(170, 59, 255, 0.1);
+  --accent-border: rgba(170, 59, 255, 0.5);
+  --shadow: rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #9ca3af;
+    --text-h: #f3f4f6;
+    --bg: #16171d;
+    --border: #2e303a;
+    --code-bg: #1f2028;
+    --accent: #c084fc;
+    --shadow: rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  }
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- DASHBOARD BUTTONS --- */
+.controls-overlay {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  gap: 15px;
+}
+
+.controls-overlay button {
+  all: unset;
+  padding: 12px 24px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow) !important;
+  font-family: var(--sans);
+}
+
+.btn-run {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.btn-save {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+.btn-history {
+  background-color: var(--text-h) !important;
+  color: var(--bg) !important;
+}
+
+.controls-overlay button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* --- REACT FLOW CUSTOM NODES --- */
+.custom-node {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  min-width: 250px;
+  box-shadow: var(--shadow);
+}
+
+.node-header {
+  background: var(--code-bg);
+  padding: 10px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  border-radius: 10px 10px 0 0;
+}
+
+textarea {
+  width: calc(100% - 24px);
+  margin: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  resize: none;
+}
+
+/* --- HISTORY PAGE STYLING --- */
+.history-page {
+  padding: 60px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: var(--bg);
+  min-height: 100vh;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 20px;
+}
+
+.history-header button {
+  all: unset;
+  padding: 12px 24px !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in-out;
+  box-shadow: var(--shadow) !important;
+  background-color: #007bff !important;
+  color: white !important;
+  font-family: var(--sans);
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); /* Uniform grid columns */
+  gap: 30px;
+  align-items: start;
+}
+
+.history-card {
+  background: var(--bg);
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  text-align: left;
+  transition: all 0.2s;
+  
+  /* Flexbox magic to keep cards the same height */
+  display: flex;
+  flex-direction: column;
+  min-height: 400px; 
+  max-height: 550px;
+}
+
+.history-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+}
+
+.card-tag {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 800;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
+}
+
+.card-prompt {
+  font-weight: 600;
+  color: var(--text-h);
+  margin-bottom: 16px;
+  font-size: 17px;
+  /* Limit prompt height to keep layout tidy */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-response {
+  font-size: 14px;
+  color: var(--text);
+  background: var(--code-bg);
+  padding: 15px;
+  border-radius: 8px;
+  line-height: 1.6;
+  
+  /* Make the response box grow to fill space, but scroll if too long */
+  flex-grow: 1;
+  overflow-y: auto; 
+  margin-bottom: 15px;
+}
+
+/* Custom Scrollbar for response box */
+.card-response::-webkit-scrollbar {
+  width: 5px;
+}
+.card-response::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 10px;
+}
+
+.card-date {
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 500;
+  margin-top: auto; /* Push to the very bottom */
+}
+
+/* --- ANIMATIONS --- */
+.loading-text {
+  color: var(--accent);
+  font-weight: 600;
+  animation: pulse 1.5s infinite;
+  text-align: center;
+  margin-top: 50px;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
